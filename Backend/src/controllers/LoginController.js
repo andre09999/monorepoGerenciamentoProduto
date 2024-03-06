@@ -2,13 +2,16 @@ const LoginService = require('../service/LoginService.js')
 const { createToken } = require('../utils/jwt.util.js')
 
 const created = async (req, res) => {
-  const response = await LoginService.createProduct(req.body)
+  const verify = await LoginService.readUsername(req.body)
+  if (verify) {
+    return res.status(400).json({mensage: "Usuario ja existe"})
+  }
+  const response = await LoginService.createUser(req.body)
   if (!response) {
     return res.status(400).json({mensage: "ocorreu um erro tente novamente"})
   }
-  return res.status(201).json({messagem: `Usuario criado token`})
+  return res.status(201).json({messagem: `Usuario criado`})
 }
-
 
 const ReadOne = async (req, res) => {
   const response = await LoginService.readdOne(req.body)

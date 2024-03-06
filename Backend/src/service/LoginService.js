@@ -2,48 +2,64 @@ const Users = require('../models/user');
 const camelize = require('camelize');
 
 
-const createProduct = async({username, password}) => {
+const createUser = async (data) => {
   try {
-    const createdProduct = await Users.create({username, password})
-
-    return createdProduct;
+    const createdUser = await Users.create({  username: data.username, password: data.password });
+    return camelize(createdUser);
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao criar usuário: ' + error.message);
   }
-}
-
+};
 
 const readdOne = async (dados) => {
   try {
-    const user = await  Users.findOne({ where:  {username: dados.username, password: dados.password}  })
+    const user = await Users.findOne({ where: { username: dados.username, password: dados.password } });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
     return camelize(user.dataValues);
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao ler usuário: ' + error.message);
   }
-}
+};
+
+const readUsername = async (dados) => {
+  try {
+    const user = await Users.findOne({ where: { username: dados.username } });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    return camelize(user.dataValues);
+  } catch (error) {
+    throw new Error('Erro ao ler usuário: ' + error.message);
+  }
+};
 
 const updateProduct = async (dados) => {
   try {
-    
-    const userProduct = await  Users.update(
+    const [rowsUpdated] = await Users.update(
       { username: dados.newUsername, password: dados.newPassword },
-      { where: { username: dados.oldUsername, password: dados.oldPassword } },
+      { where: { username: dados.oldUsername, password: dados.oldPassword } }
     );
-    return camelize(userProduct);
+    if (rowsUpdated === 0) {
+      throw new Error('Usuário não encontrado');
+    }
+    return { username: dados.newUsername, password: dados.newPassword };
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao atualizar usuário: ' + error.message);
   }
-}
+};
 
-const delet = async (dados) => {
+const deleteUser = async (dados) => {
   try {
-    
-    const deletUser = await  Users.destroy(
-      { where: { username: dados.username } },
-    );
-    return camelize(deletUser);
+    const rowsDeleted = await Users.destroy({ where: { username: dados.username } });
+    if (rowsDeleted === 0) {
+      throw new Error('Usuário não encontrado');
+    }
+    return { username: dados.username };
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao deletar usuário: ' + error.message);
   }
-}
-module.exports = { createProduct, readdOne, updateProduct, delet };
+};
+
+module.exports = { createUser, readdOne, updateProduct, deleteUser,readUsername };

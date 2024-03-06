@@ -1,58 +1,63 @@
-const Product = require('../models/product');
+const product = require('../models/product');
 const camelize = require('camelize');
 
-
-const createProduct = async({name,brand,model,price,color}) => {
+const createProduct = async ({ name, brand, model, price, color }) => {
   try {
-    const createdProduct = await Product.create({name, brand, model, price, color})
-
-    return createdProduct;
+    const createdProduct = await product.create({ name, brand, model, price, color });
+    return camelize(createdProduct);
   } catch (error) {
     throw new Error('Erro ao criar produto: ' + error.message);
   }
-}
+};
 
 const readd = async () => {
   try {
-    const Products = await Product.findAll()
-    const productValues = Products.map(product => product.dataValues);
+    console.log(product);
+    const products = await product.findAll();
+    const productValues = products.map(product => product.dataValues);
     return camelize(productValues);
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao ler produtos: ' + error.message);
   }
-}
+};
 
 const readdOne = async (id) => {
   try {
-    
-    const Products = await Product.findOne({ where:  id  })
-    return camelize(Products.dataValues);
+    const products = await product.findByPk(id);
+    if (!products) {
+      throw new Error('Produto não encontrado');
+    }
+    return camelize(products.dataValues);
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao ler produto: ' + error.message);
   }
-}
+};
+
 const updateProduct = async (id, { name, brand, model, price, color }) => {
   try {
-    
-    const updatedProduct = await Product.update(
+    const [rowsUpdated] = await product.update(
       { name, brand, model, price, color },
-      { where: { id } },
+      { where: { id } }
     );
-    return camelize(updatedProduct);
+    if (rowsUpdated === 0) {
+      throw new Error('Produto não encontrado');
+    }
+    return { id, name, brand, model, price, color };
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao atualizar produto: ' + error.message);
   }
-}
+};
 
 const delet = async (id) => {
   try {
-    
-    const updatedProduct = await Product.destroy(
-      { where: { id } },
-    );
-    return camelize(updatedProduct);
+    const rowsDeleted = await Product.destroy({ where: { id } });
+    if (rowsDeleted === 0) {
+      throw new Error('Produto não encontrado');
+    }
+    return { id };
   } catch (error) {
-    throw new Error('Erro ao criar produto: ' + error.message);
+    throw new Error('Erro ao deletar produto: ' + error.message);
   }
-}
+};
+
 module.exports = { createProduct, readd, readdOne, updateProduct, delet };

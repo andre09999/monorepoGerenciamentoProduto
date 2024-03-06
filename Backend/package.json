@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
-    "prestart": "npx sequelize-cli db:create && npx sequelize-cli db:migrate",
+    "prestart": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
     "start": "nodemon src/server.js",
     "drop": "npx sequelize-cli db:drop",
     "seed": "npx sequelize-cli db:seed:all",
@@ -15,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "camelize": "^1.0.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "4.17.3",
     "joi": "^17.12.2",
