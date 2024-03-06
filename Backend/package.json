@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "engines": {
-    "node": "20.x"
+    "node": "14.x"
   },
   "scripts": {
     "prestart": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
