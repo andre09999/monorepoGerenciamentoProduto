@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: my_backend
+    tty: true
+    stdin_open: true
+    restart: always
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root_password123
+      MYSQL_DB: produtos
+      MYSQL_HOST: db
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - api_net
+  db:
+    image: mysql:latest
+    container_name: my_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password123
+      MYSQL_USER: Trybers
+      MYSQL_PASSWORD: password123
+      MYSQL_DATABASE: produtos
+    restart: always  
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - api_net
+
+networks:
+  api_net:
+    driver: bridge
+
+volumes:
+  mysql_data:
